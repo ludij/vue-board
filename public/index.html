@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <main>
+        <div class="grid">
+
+            <div class="upload-box">
+                <h1>{{siteTitle}}</h1>
+                <p>{{siteSubTitle}}</p>
+                <br>
+                <input v-model="title" name="title" placeholder="Image title"></input>
+                <input v-model="desc" name="desc" placeholder="Image description"></input>
+                <input v-model="username" name="username" placeholder="Your name"></input>
+                <div>
+                    <label for="file-upload" tabindex="0" :class="fileNameClass">
+                        {{fileName || 'Browse files'}}
+                        <input @change="filetoupload" id="file-upload" name="file" type="file" accept="image/*" class="inline-block"></input>
+                    </label>
+                    <button @click="upload" name="submit" class="inline-block">Upload</button>
+                </div>
+            </div>
+
+            <figure v-for="img in imgs" @click="clickonimg(img.id)">
+                <img :id="img.id" :src="img.url" class="small-img" />
+                <figcaption>
+                    <h3>{{img.title}}</h3>
+                    <p>{{img.description}}</p>
+                    <p class="italic">{{'- ' + img.username}}</p>
+                </figcaption>
+            </figure>
+
+        </div>
+
+
+        <transition name="fade-in">
+            <img-modal v-if="imgId" :imgid="imgId" @closemodal="closemodal"></img-modal>
+        </transition>
+
+
+    </main>
+
+    <div class="background"></div>
+    <div class="overlay-bar top-bar"></div>
+    <div class="overlay-bar bottom-bar"></div>
+
+    <script id="img-modal" type="text/x-template">
+        <div class="img-modal" @click="clickmodal">
+
+            <div v-for="img in bigimg">
+
+                <div class="big-img" @click.stop="">
+                    <img class="faded" :src="img.url" />
+                    <img class="original" :src="img.url" />
+                </div>
+
+                <div class="infobox" @click.stop="">
+
+                    <div class="info-wrapper">
+                        <h2>{{img.title}}</h2>
+                        <p>{{img.description}}</p>
+                        <p class="italic">{{'- ' + img.username}}</p>
+                        <br>
+
+                        <h4>Comments ({{comments.length}})</h4>
+
+
+                        <div v-if="comments.length > 0" class="comments-wrapper">
+                                <p v-for="comment in comments" class="comment">
+                                    {{comment.comment}} <span class="italic">
+                                        {{'- ' + comment.username}}
+                                        <br>
+                                        ({{comment.created_at}})
+                                    </span>
+                                </p>
+                                <br>
+                        </div>
+
+                        <input v-model="comment" name="comment" placeholder="Your comment"></input>
+                        <input v-model="commenter" name="commenter" placeholder="Your name"></input>
+                        <button @click="submitcomment" name="submitcomment">Comment</button>
+
+                    </div>
+                </div>
+
+                <a :href="'#' + (img.prev_img_id || img.last_img_id)" class="prev-big-img">
+                    <div class="prev-wrapper">
+                        <h3>&#60;&#60;</h3>
+                    </div>
+                </a>
+
+                <a :href="'#' + (img.next_img_id || img.first_img_id)" class="next-big-img">
+                    <div class="next-wrapper">
+                        <h3>&#62;&#62;</h3>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+    </script>
+
+
+    <script src="/js/vue.js"></script>
+    <script src="/js/axios.min.js"></script>
+    <script src="/js/scripts.js"></script>
+</body>
+
+</html>
